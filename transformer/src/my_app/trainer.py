@@ -9,7 +9,7 @@ class Trainer(nnx.Module):
         self.optimizer = optimizer
         self.metrics = metrics
         self.best_acc = nnx.Variable(jax.numpy.array(0.0))
-        self.step = 0
+        self.step =  nnx.Variable(jax.numpy.array(0.0))
         self.logger = logger
 
     @nnx.jit
@@ -23,7 +23,9 @@ class Trainer(nnx.Module):
         (loss, logits), grads = nnx.value_and_grad(loss_fn, has_aux=True)(self.model)
         self.optimizer.update(self.model,grads)
         self.metrics.update(loss=loss, logits=logits, labels=batch['label'])
-        self.step += 1
+
+        new_step = self.step +1
+        self.step = new_step
 
     @nnx.jit
     @partial(jax.profiler.annotate_function, name='val_step')
@@ -36,11 +38,7 @@ class Trainer(nnx.Module):
     def run_epoch(self, loader, is_training=True):
         self.metrics.reset()
 
-        # Define the description for the progress bar
         desc = "Training" if is_training else "Validating"
-
-        # Wrap the loader with tqdm
-        # 'leave=False' closes the bar after the epoch finishes to keep the console clean
         pbar = tqdm(loader, desc=desc, leave=False)
 
         for batch in pbar:
@@ -48,9 +46,6 @@ class Trainer(nnx.Module):
                 self.train_step(batch)
             else:
                 self.val_step(batch)
-
-            # Optional: Update the progress bar with live metrics
-            # This computes metrics on the fly (might slow down training slightly)
             current_metrics = self.metrics.compute()
             pbar.set_postfix({k: f"{v:.4f}" for k, v in current_metrics.items()})
 
