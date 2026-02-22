@@ -1,0 +1,12 @@
+model:
+  din: 1
+  dout: 10
+  dropout_rate: 0.2
+  rng_num: 42
+training:
+  learning_rate: 0.001
+  batch_size: 128
+  epochs: 5
+  checkpoint_dir: "mnist_checkpoints"
+  trace_dir: "/tmp/jax_trace"
+  log_dir: "/tmp/tensoboard_jax_log"
