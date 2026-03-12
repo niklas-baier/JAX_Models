@@ -1,0 +1,18 @@
+model:
+  din: 1
+  dout: 10
+  dropout_rate: 0.2
+  rng_num: 42
+training:
+  learning_rate: 0.001
+  batch_size: 2
+  epochs: 5
+  checkpoint_dir: "mnist_checkpoints"
+  trace_dir: "/tmp/jax_trace"
+  log_dir: "/tmp/tensoboard_jax_log"
+  grad_accum_steps: 8
+dataset:
+  path: "data/EuroSAT_RGB"
+  image_size: [64, 64] #Height and width of the image
+  channels: 3
+  num_classes: 10
